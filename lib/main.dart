@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 ///////////////////////////////////////////////////
 
 import 'package:caching_images/DB/DBManger.dart';
@@ -100,15 +102,16 @@ class _MyHomePageState extends State<MyHomePage> {
     //      int eq=a.compareTo(imgModel.imgUrl);
     //     print('${imgModel.imgUrl==a} imggg eeee');
 
-    //  dynamic img=await dbManager.getImageByBusinessTypeId(81);
-    // print('${img[0]} img');
-    //  dynamic img2=await dbManager.getImageByAppId(13);
-    // var e=   dbManager.getImageByModuleId(5).then((val) {
-    //   print('$val val');
-    // });
 
-    //print('${{await dbManager.getImageByAppId(13)}} img');
-    // print('$e img eeee');
+      //  dynamic img=await dbManager.getImageByBusinessTypeId(81);
+   // print('${img[0]} img');
+   //  dynamic img2=await dbManager.getImageByAppId(13);
+   // var e=   dbManager.getImageByModuleId(5).then((val) {
+   //   print('$val val');
+   // });
+
+     //print('${{await dbManager.getImageByAppId(13)}} img');
+     // print('$e img eeee');
     // print('${await dbManager.getImageByScreenId(0)} img');
     // print('${await dbManager.getImageByBusinessTypeId(81)} img');
   }

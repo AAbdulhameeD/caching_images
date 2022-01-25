@@ -18,7 +18,7 @@ class DBManager {
   Future<Database> createImagesDatabase() async {
     String path = join(await getDatabasesPath(), 'images1.db');
     print('path : $path');
-    _imagesDB = await openDatabase(path, version: 1, onCreate: (Database db, int v)async {
+    _imagesDB = await openDatabase(path, version: 1, onCreate: (Database db, int version)async {
       // create tables
       await  db.execute('''CREATE TABLE images_caching (url TEXT , type  integer UNIQUE ,
            app_id  integer UNIQUE, module_id  integer UNIQUE, screen_type TEXT UNIQUE, business_type_id  integer UNIQUE  )
