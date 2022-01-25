@@ -5,6 +5,7 @@ class ImageModel{
   int moduleId;
   String screenType;
   int businessTypeID;
+  bool isInDB=false;
   String get img=>'${imgUrl.toString()}';
 
   bool compare(String url){
@@ -15,13 +16,9 @@ class ImageModel{
   }
 
 
-  @override
-  String toString() {
-    return '$imgUrl';
-  }
 
   ImageModel({this.imgUrl, this.imgType, this.appId, this.moduleId,
-      this.screenType, this.businessTypeID});
+      this.screenType, this.businessTypeID,this.isInDB});
   factory ImageModel.fromJson(Map<String, dynamic> json) =>
       ImageModel(
         imgUrl: json['url'],
