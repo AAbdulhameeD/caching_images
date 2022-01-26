@@ -4,6 +4,8 @@ import 'package:image/image.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+
+import 'main.dart';
 class SaveFile {
 
   Future<String> get _localPath async {
@@ -12,23 +14,36 @@ class SaveFile {
     return directory.path;
   }
   Future<Io.File> getImageFromNetwork(String url) async {
+    Io.HttpOverrides.global = MyHttpOverrides();
 
-    Io.File file = await DefaultCacheManager().getSingleFile(url);
+    Io.File file = await DefaultCacheManager().getSingleFile(url).then((value) {
+      print('${      value.uri} uri');
+    }).catchError((e){
+      print('$e error in getImageFromNetwork');
+    });
 
     return file;
   }
 
-  Future<Io.File> saveImage(String url) async {
+  Future<String> saveImage(String url) async {
+    Io.HttpOverrides.global = MyHttpOverrides();
 
-    final file = await getImageFromNetwork(url);
-    //retrieve local path for device
+   try{
+     final file = await getImageFromNetwork(url);
+     print('${     file.path} downloaded file path');
+
+     //retrieve local path for device
     var path = await _localPath;
     Image image = decodeImage(file.readAsBytesSync());
 
-    Image thumbnail = copyResize(image,height: 100,width: 100);
-
+    Image thumbnail = copyResize(image,height: 50,width: 50);
+    var img =  Io.File('$path/11_22.png')..writeAsBytesSync(encodePng(thumbnail));
     // Save the thumbnail as a PNG.
-    return new Io.File('$path/${DateTime.now().toUtc().toIso8601String()}.png')
-      ..writeAsBytesSync(encodePng(thumbnail));
+    return    img.path;
+
+   }catch(e){
+     print('${e.toString()}');
+     return 'error in saving the image';
+   }
   }
 }

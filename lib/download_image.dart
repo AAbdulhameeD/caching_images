@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
-class DownloadImage {
+import 'main.dart';
 
+class DownloadImage {
   Directory appDirectory;
   final folderName = "cached_images";
 
@@ -41,14 +43,53 @@ class DownloadImage {
     @required String url,
     @required String fileName,
   }) async {
+    //HttpOverrides.global = MyHttpOverrides();
+  // var cancelToken=CancelToken();
 
-    Dio dio = Dio();
-    final filePath = await _getFilePath(fileName);
-    //print('file path $filePath');
-    await dio.download(url, filePath);
+    try {
+      Dio dio = new Dio();
+      (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+          (HttpClient client) {
+        client.badCertificateCallback =
+            (X509Certificate cert, String host, int port) => true;
+        return client;
+      };
+      //
+      var appDir = await getApplicationDocumentsDirectory();
+      String fullPath= '${appDir.path}/5565.jpg';
+   //final filePath = await getFilePath(fileName);
+    //  print('file path $filePath');
+       Response response=await dio.get(
+        url,
+        options: Options(
+            responseType: ResponseType.bytes,
+            followRedirects: false,
+            validateStatus: (status) {
+              return status < 500;
+            }),
+      );
+      print(response.headers);
+      File file = File(fullPath);
+      var raf = file.openSync(mode: FileMode.write);
+      print(response.data);
+
+      // response.data is List<int> type
+      raf.writeFromSync(response.data);
+      await raf.close();
+
+      //      .download(url, filePath ).then((value) {
+      //   print('${value} downloadImage response ');
+      // }).catchError((e){
+      //   print('$e downloadImage error ');
+      //
+      // });
+
+    } catch (e) {
+      print('${e.toString()} error in download');
+    }
   }
 
-  Future<String> _getFilePath(String uniqueFileName) async {
+  Future<String> getFilePath(String uniqueFileName) async {
     String path = '';
     appDirectory = await getApplicationDocumentsDirectory();
     //await File( '${dir.path}/images').create().then((value) => print(value.path));
@@ -58,11 +99,11 @@ class DownloadImage {
       print("exist");
       print(folderPath.path);
       //folderPath.create().then((value) => print(value.path));
-      path = '${folderPath.path}/$uniqueFileName';
+      path = '${folderPath.path}/$uniqueFileName.png';
     } else {
       print("not exist");
       folderPath.create().then((value) => print(value.path));
-      path = '${folderPath.path}/$uniqueFileName';
+      path = '${folderPath.path}/$uniqueFileName.png';
     }
     print('my path $path');
     return path;
@@ -72,14 +113,11 @@ class DownloadImage {
     appDirectory = await getApplicationDocumentsDirectory();
     final imagesDirectory = Directory('${appDirectory.path}/$folderName');
     List<String> imagesTitles = [];
-    final contents = imagesDirectory.listSync(
-        recursive: true, followLinks: false);
+    final contents =
+        imagesDirectory.listSync(recursive: true, followLinks: false);
     contents.forEach((image) {
       String imageName = image.toString().substring(
-          image.toString().lastIndexOf('/') + 1,
-          image
-              .toString()
-              .length - 1);
+          image.toString().lastIndexOf('/') + 1, image.toString().length - 1);
       imagesTitles.add(imageName);
       print(imageName);
     });
@@ -95,9 +133,5 @@ class DownloadImage {
     /* List<FileSystemEntity> entities = await filePath.list().toList();
     entities.forEach(print);
     return entities.contains('1_login.png');*/
-
   }
-
-
-
 }
