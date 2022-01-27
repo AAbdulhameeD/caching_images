@@ -15,7 +15,9 @@ class ImageModel{
       return false;
   }
 
-
+String getImageName(String extension){
+    return '${imgType}_${appId}_${moduleId}_$screenType.$extension';
+}
 
   ImageModel({this.imgUrl, this.imgType, this.appId, this.moduleId,
       this.screenType, this.businessTypeID,this.isInDB});

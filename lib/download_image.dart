@@ -43,9 +43,6 @@ class DownloadImage {
     @required String url,
     @required String fileName,
   }) async {
-    //HttpOverrides.global = MyHttpOverrides();
-  // var cancelToken=CancelToken();
-
     try {
       Dio dio = new Dio();
       (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
@@ -55,9 +52,7 @@ class DownloadImage {
         return client;
       };
       //
-      var appDir = await getApplicationDocumentsDirectory();
-      String fullPath= '${appDir.path}/5565.jpg';
-   //final filePath = await getFilePath(fileName);
+      final filePath = await getFilePath(fileName);
     //  print('file path $filePath');
        Response response=await dio.get(
         url,
@@ -69,7 +64,7 @@ class DownloadImage {
             }),
       );
       print(response.headers);
-      File file = File(fullPath);
+      File file = File(filePath);
       var raf = file.openSync(mode: FileMode.write);
       print(response.data);
 
@@ -99,11 +94,11 @@ class DownloadImage {
       print("exist");
       print(folderPath.path);
       //folderPath.create().then((value) => print(value.path));
-      path = '${folderPath.path}/$uniqueFileName.png';
+      path = '${folderPath.path}/$uniqueFileName';
     } else {
       print("not exist");
       folderPath.create().then((value) => print(value.path));
-      path = '${folderPath.path}/$uniqueFileName.png';
+      path = '${folderPath.path}/$uniqueFileName';
     }
     print('my path $path');
     return path;
