@@ -22,6 +22,7 @@ class MyHttpOverrides extends Io.HttpOverrides {
 }
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -51,6 +52,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   DBManager dbManager = DBManager();
   Io.File file;
+  var folderPath='';
 
   ImageModel imgModel = ImageModel(
       appId: 11,
@@ -66,13 +68,13 @@ class _MyHomePageState extends State<MyHomePage> {
   List<ImageModel> list = [];
 
   Future<void> isDbContainsUrl(
-      String url, List<ImageModel> list, ImageModel newModel) async {
+      List<ImageModel> list, ImageModel newModel) async {
     print(list.length);
     if (list.length == 0) {
       print('iam here');
 
       await DownloadImage()
-          .downloadImage(url: url, fileName: newModel.getImageName('png'));
+          .downloadImage(url: newModel.imgUrl, fileName: newModel.getImageName('png'));
       await dbManager.insertImageIntoDB(newModel);
       setState(() {
         newModel.isInDB = true;
@@ -80,14 +82,14 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       for (var item in list) {
         print('${item.appId} appid');
-        if (url.compareTo(item.imgUrl) == 0) {
+        if ( newModel.imgUrl.compareTo(item.imgUrl) == 0) {
           //TODO check image in local Storage, if it's not exists download it
-          bool isInLocal = await DownloadImage()
-              .isInLocal("${newModel.getImageName("png")}");
+          bool isInLocal =  DownloadImage()
+              .isInLocal("${newModel.getImageName("png")}",folderPath);
           print(isInLocal);
           if (!isInLocal) {
             DownloadImage().downloadImage(
-                url: url, fileName: "${newModel.getImageName("png")}");
+                url:  newModel.imgUrl, fileName: "${newModel.getImageName("png")}");
           }
           setState(() {
             item.isInDB = true;
@@ -95,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
         } else {
           //TODO download the img and insert the model in DB
           await DownloadImage().downloadImage(
-              url: url, fileName: "${newModel.getImageName("png")}");
+              url:  newModel.imgUrl, fileName: "${newModel.getImageName("png")}");
           setState(() {
             item.isInDB = false;
           });
@@ -105,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void getLocalImage(String url, ImageModel model) async {
+  void getLocalImage( ImageModel model) async {
     //await  dbManager.insertImageIntoDB(ImageModel(imgUrl: "aaa",appId: 13,businessTypeID: 10,moduleId: 5,imgType: PROFILE_lOGO,screenType: 'a'));
     // var response = await HttpHelper.getData(
     //     "https://mocki.io/v1/5a9ed1bc-e945-41b1-b6ab-c9b6a99ecc55");
@@ -135,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
       for (var i = 0; i < value.length; i++) {
         list.add(ImageModel.fromJson(value[i]));
       }
-      await isDbContainsUrl(url, list, model);
+      await isDbContainsUrl( list, model);
       //   print('${img.isInDB} is in Db ?');
     });
     // list.add(await dbManager.getImageByAppId(2));
@@ -175,17 +177,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    folderPath= await getFilePathString();
+
+  }
+
+  @override
   void initState() {
 
-
-    DownloadImage()
-        .getFilePath('${imgModel.getImageName("png")}')
-        .then((value) {
-      filePath = value;
-      print('filePath: $filePath');
-    });
     super.initState();
 
+    Future.delayed(const Duration(milliseconds: 0), () async {
+      folderPath= await getFilePathString();
+
+    });
     /*
     Future.delayed(const Duration(milliseconds: 500), () async {
       await DownloadImage()
@@ -203,16 +209,31 @@ class _MyHomePageState extends State<MyHomePage> {
 //await dbManager.insertImageIntoDB('http://asd', 1, 3, 5, 10, 8);
 
   Future<String> getFilePathString() async {
-    await DownloadImage()
-        .getFilePath('${imgModel.getImageName("png")}')
-        .then((value) => filePath = value);
+     return await DownloadImage()
+        .getFilePath();
   }
 
+  Io.File getUiImage(String imgName){
+    try{
+     if(DownloadImage().isInLocal('$imgName', folderPath)){
+       return Io.File('$folderPath/$imgName');
+     }else{
+       return Io.File('$folderPath/28-11.PNG');
+
+     }
+      print('$folderPath folder path contains image?  ');}catch(e){
+      print('$e');
+      return Io.File('$folderPath/28-11.PNG');
+
+    }
+  }
   @override
   Widget build(BuildContext context) {
-    print(filePath);
 
-    Io.File file = Io.File(filePath);
+
+   Io.File file = getUiImage(imgModel.getImageName('png'));
+
+  //  Io.File file = Io.File(filePath);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -225,7 +246,7 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 200,
               height: 200,
               child: Image(
-                image: FileImage(file),
+                image: FileImage(getUiImage(imgModel.getImageName('png'))),
               ),
             )
             /* Container(
@@ -246,6 +267,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
+            getLocalImage(imgModel);
+            setState(() {
+
+            });
             // getLocalImage(
             //   "https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg",
             //   ImageModel(
@@ -259,9 +284,7 @@ class _MyHomePageState extends State<MyHomePage> {
             //   ),
             // );
             // print('${await dbManager.getImageByType(11)} img');
-            getLocalImage(
-                "https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg",
-                imgModel);
+
             // await DownloadImage().downloadImage(url: "https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg"
             //      , fileName: 'fareedddd');
 

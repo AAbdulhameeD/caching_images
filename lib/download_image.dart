@@ -52,9 +52,9 @@ class DownloadImage {
         return client;
       };
       //
-      final filePath = await getFilePath(fileName);
-    //  print('file path $filePath');
-       Response response=await dio.get(
+      final filePath = '${await getFilePath()}/$fileName';
+      //  print('file path $filePath');
+      Response response = await dio.get(
         url,
         options: Options(
             responseType: ResponseType.bytes,
@@ -84,7 +84,7 @@ class DownloadImage {
     }
   }
 
-  Future<String> getFilePath(String uniqueFileName) async {
+  Future<String> getFilePath() async {
     String path = '';
     appDirectory = await getApplicationDocumentsDirectory();
     //await File( '${dir.path}/images').create().then((value) => print(value.path));
@@ -94,29 +94,33 @@ class DownloadImage {
       print("exist");
       print(folderPath.path);
       //folderPath.create().then((value) => print(value.path));
-      path = '${folderPath.path}/$uniqueFileName';
+      path = '${folderPath.path}';
     } else {
       print("not exist");
       folderPath.create().then((value) => print(value.path));
-      path = '${folderPath.path}/$uniqueFileName';
+      path = '${folderPath.path}';
     }
     print('my path $path');
     return path;
   }
 
-  Future<bool> isInLocal(String fileName) async {
-    appDirectory = await getApplicationDocumentsDirectory();
-    final imagesDirectory = Directory('${appDirectory.path}/$folderName');
-    List<String> imagesTitles = [];
-    final contents =
-        imagesDirectory.listSync(recursive: true, followLinks: false);
-    contents.forEach((image) {
-      String imageName = image.toString().substring(
-          image.toString().lastIndexOf('/') + 1, image.toString().length - 1);
-      imagesTitles.add(imageName);
-      print(imageName);
-    });
-    return imagesTitles.contains(fileName);
+  bool isInLocal(String fileName, String directory) {
+    // appDirectory = await getApplicationDocumentsDirectory();
+    if (directory.isNotEmpty) {
+      final imagesDirectory = Directory('$directory');
+      List<String> imagesTitles = [];
+      final contents =
+          imagesDirectory.listSync(recursive: true, followLinks: false);
+      contents.forEach((image) {
+        String imageName = image.toString().substring(
+            image.toString().lastIndexOf('/') + 1, image.toString().length - 1);
+        imagesTitles.add(imageName);
+        print(imageName);
+      });
+      return imagesTitles.contains(fileName);
+    } else {
+      throw ('the directory is wrong');
+    }
     // for (var fileOrDir in contents) {
     //   if (fileOrDir is File) {
     //     print(fileOrDir);
