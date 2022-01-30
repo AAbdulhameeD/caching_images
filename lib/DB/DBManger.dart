@@ -101,7 +101,7 @@ class DBManager {
     }
   }
 
-  Future<List<Map<String,dynamic>>> getImageByModuleIdAndAppId(int moduleId,int appId) async {
+  Future<List<Map<String,dynamic>>> getImageByModuleAndAppId(int moduleId,int appId) async {
     Database db = await imagesDB;
     try {List<dynamic> img =await db.rawQuery(
         'select * from images_caching where module_id = $moduleId AND app_id=$appId');

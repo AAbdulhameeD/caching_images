@@ -7,7 +7,6 @@ import 'dart:math';
 import 'package:caching_images/DB/DBManger.dart';
 import 'package:caching_images/download_image.dart';
 import 'package:caching_images/models/image_model.dart';
-import 'package:caching_images/save_img.dart';
 import 'package:flutter/material.dart';
 
 import 'download_image.dart';
@@ -40,6 +39,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
+enum ImageNameFormat {
+  TYPE,
+  TYPE_APPID,
+  TYPE_APPID_MODULEID,
+  TYPE_APPID_BUSSINESS_TID_SCREENTYPE
+}
+
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -52,62 +58,160 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   DBManager dbManager = DBManager();
   Io.File file;
-  var folderPath='';
+  var folderPath = '';
 
   ImageModel imgModel = ImageModel(
-      appId: 11,
-      businessTypeID: 22,
-      imgType: 23,
-      moduleId: 44,
-      screenType: 'aa',
+      appId: 1111,
+      businessTypeID: 1211,
+      imgType: 115,
+      moduleId: 515,
+      screenType: 'asda',
       imgUrl:
-          "https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg");
-  int _counter = 0;
+          "https://png.pngitem.com/pimgs/s/466-4661960_transparent-boy-putting-on-clothes-clipart-serbian-kids.png");
   String filePath;
 
   List<ImageModel> list = [];
 
-  Future<void> isDbContainsUrl(
-      List<ImageModel> list, ImageModel newModel) async {
+  Io.File isDbContainsUrl(
+      List<ImageModel> list, ImageModel newModel, imgNameFormat) {
     print(list.length);
-    if (list.length == 0) {
+    bool isInLocal = DownloadImage().isInLocal(
+        "${newModel.getImageName("png", imgNameFormat)}", folderPath);
+    print('$isInLocal is in local');
+    if (list.length == 0 && !isInLocal) {
       print('iam here');
 
-      await DownloadImage()
-          .downloadImage(url: newModel.imgUrl, fileName: newModel.getImageName('png'));
-      await dbManager.insertImageIntoDB(newModel);
-      setState(() {
-        newModel.isInDB = true;
+      DownloadImage()
+          .downloadImage(
+              url: newModel.imgUrl,
+              fileName: newModel.getImageName('png', imgNameFormat))
+          .then((value)  {
+        print('downloaded');
+
       });
+
+      if (newModel.isInDB == false) {
+        newModel.isInDB = true;
+        dbManager.insertImageIntoDB(newModel).then((value) {}).catchError((e) {
+          newModel.isInDB = false;
+        });
+      }
+      return Io.File(
+          '$folderPath/${newModel.getImageName('png', imgNameFormat)}');
+
+      // setState(() {
+      //   newModel.isInDB = true;
+      // });
     } else {
       for (var item in list) {
         print('${item.appId} appid');
-        if ( newModel.imgUrl.compareTo(item.imgUrl) == 0) {
+        if (newModel.imgUrl.compareTo(item.imgUrl) == 0) {
           //TODO check image in local Storage, if it's not exists download it
-          bool isInLocal =  DownloadImage()
-              .isInLocal("${newModel.getImageName("png")}",folderPath);
+          bool isInLocal = DownloadImage().isInLocal(
+              "${item.getImageName("png", imgNameFormat)}", folderPath);
           print(isInLocal);
-          if (!isInLocal) {
-            DownloadImage().downloadImage(
-                url:  newModel.imgUrl, fileName: "${newModel.getImageName("png")}");
+          if (isInLocal == false) {
+            DownloadImage()
+                .downloadImage(
+                    url: newModel.imgUrl,
+                    fileName: "${item.getImageName("png", imgNameFormat)}")
+                .then((value) {
+              print('downloaded');
+            });
           }
-          setState(() {
-            item.isInDB = true;
-          });
+          // setState(() {
+          //   item.isInDB = true;
+          // });
         } else {
           //TODO download the img and insert the model in DB
-          await DownloadImage().downloadImage(
-              url:  newModel.imgUrl, fileName: "${newModel.getImageName("png")}");
-          setState(() {
-            item.isInDB = false;
+          DownloadImage()
+              .downloadImage(
+                  url: newModel.imgUrl,
+                  fileName: "${item.getImageName("png", imgNameFormat)}")
+              .then((value) {
+            print('downloaded');
+
           });
-          //dbManager.insertImageIntoDB(newModel);
+          // setState(() {
+          //   item.isInDB = false;
+          // });
+          if (item.isInDB == false) {
+            item.isInDB = true;
+            dbManager.insertImageIntoDB(item).then((value) {}).catchError((e) {
+              item.isInDB = false;
+              print('hhhhhhhhhhhhh');
+            });
+          }
         }
+        return Io.File(
+            '$folderPath/${item.getImageName('png', imgNameFormat)}');
       }
     }
+    return Io.File(
+        '$folderPath/${newModel.getImageName('png', imgNameFormat)}');
   }
 
-  void getLocalImage( ImageModel model) async {
+  List<ImageModel> imgTypeList = [];
+
+  void getImageByType(ImageModel imgModel) {
+    dbManager.getImageByType(imgModel.imgType).then((value) async {
+      for (var i = 0; i < value.length; i++) {
+        imgTypeList.add(ImageModel.fromJson(value[i]));
+        await isDbContainsUrl(imgTypeList, imgModel, ImageNameFormat.TYPE);
+      }
+    });
+  }
+
+  List<ImageModel> imgAppIdList = [];
+
+  Io.File getImageByAppId(ImageModel imgModel) {
+    dbManager.getImageByAppId(imgModel.appId).then((value) async {
+      for (var i = 0; i < value.length; i++) {
+        imgAppIdList.add(ImageModel.fromJson(value[i]));
+      }
+    });
+    return isDbContainsUrl(imgAppIdList, imgModel, ImageNameFormat.TYPE_APPID);
+    // if(imgModel.isInDB &&folderPath.isNotEmpty){
+    //     //   return Io.File('$folderPath/${imgModel.getImageName('png', ImageNameFormat.TYPE_APPID)}');
+    //     // }else{
+    //     //   return Io.File('$folderPath/11_22.png');
+    //     //
+    //     // }
+  }
+
+  List<ImageModel> imgModelAndAppIdList = [];
+
+  void getImageByModuleIdAndAppId(ImageModel imgModel) {
+    dbManager
+        .getImageByModuleAndAppId(
+      imgModel.moduleId,
+      imgModel.appId,
+    )
+        .then((value) async {
+      for (var i = 0; i < value.length; i++) {
+        imgModelAndAppIdList.add(ImageModel.fromJson(value[i]));
+        await isDbContainsUrl(imgModelAndAppIdList, imgModel,
+            ImageNameFormat.TYPE_APPID_MODULEID);
+      }
+    });
+  }
+
+  List<ImageModel> imgScreenAndBusinessIdList = [];
+
+  void getImageByScreenTypeAndBusinessId(ImageModel imgModel) {
+    dbManager
+        .getImageByScreenTypeAndBusinessId(
+            imgModel.appId, imgModel.screenType, imgModel.businessTypeID)
+        .then((value) async {
+      for (var i = 0; i < value.length; i++) {
+        imgScreenAndBusinessIdList.add(ImageModel.fromJson(value[i]));
+        await isDbContainsUrl(imgScreenAndBusinessIdList, imgModel,
+            ImageNameFormat.TYPE_APPID_BUSSINESS_TID_SCREENTYPE);
+      }
+    });
+  }
+
+  void getLocalImage(ImageModel model) async {
     //await  dbManager.insertImageIntoDB(ImageModel(imgUrl: "aaa",appId: 13,businessTypeID: 10,moduleId: 5,imgType: PROFILE_lOGO,screenType: 'a'));
     // var response = await HttpHelper.getData(
     //     "https://mocki.io/v1/5a9ed1bc-e945-41b1-b6ab-c9b6a99ecc55");
@@ -124,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
     dbManager
-        .getImageByModuleIdAndAppId(model.moduleId, model.appId)
+        .getImageByModuleAndAppId(model.moduleId, model.appId)
         .then((value) {
       for (var i = 0; i < value.length; i++) {
         list.add(ImageModel.fromJson(value[i]));
@@ -137,7 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
       for (var i = 0; i < value.length; i++) {
         list.add(ImageModel.fromJson(value[i]));
       }
-      await isDbContainsUrl( list, model);
+      //  await isDbContainsUrl( list, model);
       //   print('${img.isInDB} is in Db ?');
     });
     // list.add(await dbManager.getImageByAppId(2));
@@ -179,18 +283,15 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    folderPath= await getFilePathString();
-
+    folderPath = await getFilePathString();
   }
 
   @override
   void initState() {
-
     super.initState();
 
     Future.delayed(const Duration(milliseconds: 0), () async {
-      folderPath= await getFilePathString();
-
+      folderPath = await getFilePathString();
     });
     /*
     Future.delayed(const Duration(milliseconds: 500), () async {
@@ -209,31 +310,28 @@ class _MyHomePageState extends State<MyHomePage> {
 //await dbManager.insertImageIntoDB('http://asd', 1, 3, 5, 10, 8);
 
   Future<String> getFilePathString() async {
-     return await DownloadImage()
-        .getFilePath();
+    return await DownloadImage().getFilePath();
   }
 
-  Io.File getUiImage(String imgName){
-    try{
-     if(DownloadImage().isInLocal('$imgName', folderPath)){
-       return Io.File('$folderPath/$imgName');
-     }else{
-       return Io.File('$folderPath/28-11.PNG');
-
-     }
-      print('$folderPath folder path contains image?  ');}catch(e){
+  Io.File getUiImage(String imgName) {
+    try {
+      if (DownloadImage().isInLocal('$imgName', folderPath)) {
+        return Io.File('$folderPath/$imgName');
+      } else {
+        return Io.File('$folderPath/28-11.PNG');
+      }
+      print('$folderPath folder path contains image?  ');
+    } catch (e) {
       print('$e');
       return Io.File('$folderPath/28-11.PNG');
-
     }
   }
+
   @override
   Widget build(BuildContext context) {
+    // Io.File file = getUiImage(imgModel.getImageName('png'));
 
-
-   Io.File file = getUiImage(imgModel.getImageName('png'));
-
-  //  Io.File file = Io.File(filePath);
+    //  Io.File file = Io.File(filePath);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -246,7 +344,7 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 200,
               height: 200,
               child: Image(
-                image: FileImage(getUiImage(imgModel.getImageName('png'))),
+                image: FileImage(getImageByAppId(imgModel)),
               ),
             )
             /* Container(
@@ -267,10 +365,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            getLocalImage(imgModel);
-            setState(() {
-
-            });
+            // getLocalImage(imgModel);
+            setState(() {});
             // getLocalImage(
             //   "https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg",
             //   ImageModel(

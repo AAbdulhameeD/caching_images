@@ -115,7 +115,7 @@ class DownloadImage {
         String imageName = image.toString().substring(
             image.toString().lastIndexOf('/') + 1, image.toString().length - 1);
         imagesTitles.add(imageName);
-        print(imageName);
+        // print(imageName);
       });
       return imagesTitles.contains(fileName);
     } else {
