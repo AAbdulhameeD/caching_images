@@ -133,4 +133,6 @@ class DownloadImage {
     entities.forEach(print);
     return entities.contains('1_login.png');*/
   }
+
+  
 }

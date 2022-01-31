@@ -1,5 +1,3 @@
-import '../main.dart';
-
 class ImageModel{
   String imgUrl;
   int imgType;
@@ -17,28 +15,13 @@ class ImageModel{
       return false;
   }
 
-String getImageName(String extension, dynamic imgName){
-    switch(imgName){
-      case ImageNameFormat.TYPE:
-        return '$imgType.$extension';
-        break;
-        case ImageNameFormat.TYPE_APPID:
-        return '${imgType}_$appId.$extension';
-        break;
-        case ImageNameFormat.TYPE_APPID_MODULEID:
-        return '${imgType}_${appId}_$moduleId.$extension';
-        break;
-        case ImageNameFormat.TYPE_APPID_BUSSINESS_TID_SCREENTYPE:
-          return '${imgType}_${appId}_${moduleId}_$screenType.$extension';
-        break;
-      default :
-        return  '$imgType.$extension';
-
-    }
+String getImageName(String extension){
+    return '${imgType}_${appId}_${moduleId}_$screenType.$extension';
 }
 
   ImageModel({this.imgUrl, this.imgType, this.appId, this.moduleId,
-      this.screenType, this.businessTypeID,});
+      this.screenType, this.businessTypeID,this.isInDB});
+
   factory ImageModel.fromJson(Map<String, dynamic> json) =>
       ImageModel(
         imgUrl: json['url'],
