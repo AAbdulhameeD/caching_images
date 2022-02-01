@@ -84,6 +84,13 @@ class DownloadImage {
     }
   }
 
+  void isSameImage(File file){
+    List<int> img =[];
+    var raf = file.openSync(mode: FileMode.write);
+    raf.readIntoSync(img);
+
+  }
+
   Future<String> getFilePath() async {
     String path = '';
     appDirectory = await getApplicationDocumentsDirectory();
@@ -103,24 +110,27 @@ class DownloadImage {
     print('my path $path');
     return path;
   }
-
+//done
+  //Hamdy .. make file utils and move it out of download class
   bool isInLocal(String fileName, String directory) {
     // appDirectory = await getApplicationDocumentsDirectory();
-    if (directory.isNotEmpty) {
+   // if (directory.isNotEmpty) {
       final imagesDirectory = Directory('$directory');
+      //Hamdy .. there is no need for list. it will be always one file
       List<String> imagesTitles = [];
       final contents =
           imagesDirectory.listSync(recursive: true, followLinks: false);
       contents.forEach((image) {
         String imageName = image.toString().substring(
             image.toString().lastIndexOf('/') + 1, image.toString().length - 1);
+        //
         imagesTitles.add(imageName);
         // print(imageName);
       });
       return imagesTitles.contains(fileName);
-    } else {
+  //  } else {
       throw ('the directory is wrong');
-    }
+ //   }
     // for (var fileOrDir in contents) {
     //   if (fileOrDir is File) {
     //     print(fileOrDir);
