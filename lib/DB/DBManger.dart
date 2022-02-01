@@ -20,6 +20,7 @@ class DBManager {
     print('path : $path');
     _imagesDB = await openDatabase(path, version: 1, onCreate: (Database db, int version)async {
       // create tables
+      //Hamdy .. there is no unique item
       await  db.execute('''CREATE TABLE images_caching (url TEXT , type  integer UNIQUE ,
            app_id  integer UNIQUE, module_id  integer UNIQUE, screen_type TEXT UNIQUE, business_type_id  integer UNIQUE  )
           ''');
@@ -42,6 +43,7 @@ class DBManager {
           '${imageModel.screenType}',
            ${imageModel.businessTypeID} )''',);}
            catch(e) {
+      //Hamdy .. use other function for printing to disable logging in releae mode (security issue) [use the one we used in S2G]
       print('insert error : ${e.toString()}');
     }
   }
@@ -50,6 +52,7 @@ class DBManager {
      ImageModel imageModel)async{
     Database db = await imagesDB;
     try{
+      print(imageModel.imgUrl);
       await db.rawUpdate('''
     update images_caching 
     set url = ?  ,
@@ -59,7 +62,8 @@ class DBManager {
     screen_type = ?,
     business_type_id = ?
     where type = ? ''', [
-        imageModel.imgUrl,
+        //  Hamdy .. Update the URL only.
+        '${imageModel.imgUrl}',
         imageModel.imgType,
         imageModel.appId,
         imageModel.moduleId,
@@ -122,6 +126,7 @@ class DBManager {
       return [];
     }
   }
+  //        //Hamdy .. file names is in camel case.
   //
   // Future<List<dynamic>> getImageByBusinessTypeId(int businessTypeId) async {
   //   Database db = await imagesDB;

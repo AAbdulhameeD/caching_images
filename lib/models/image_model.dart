@@ -16,11 +16,12 @@ class ImageModel{
     else
       return false;
   }
-
+//Hamdy .. change imgName to imageType
 String getImageName(String extension, dynamic imgName){
     switch(imgName){
       case ImageNameFormat.TYPE:
         return '$imgType.$extension';
+        //Hamdy .. as there is return , so there is no need for break
         break;
         case ImageNameFormat.TYPE_APPID:
         return '${imgType}_$appId.$extension';
@@ -32,6 +33,8 @@ String getImageName(String extension, dynamic imgName){
           return '${imgType}_${appId}_${moduleId}_$screenType.$extension';
         break;
       default :
+      //Hamdy .. as there is no default.
+
         return  '$imgType.$extension';
 
     }

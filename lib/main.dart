@@ -1,6 +1,5 @@
+import 'dart:async';
 import 'dart:io' as Io;
-
-import 'dart:math';
 
 ///////////////////////////////////////////////////
 
@@ -67,45 +66,49 @@ class _MyHomePageState extends State<MyHomePage> {
       moduleId: 515,
       screenType: 'asda',
       imgUrl:
-          "https://png.pngitem.com/pimgs/s/466-4661960_transparent-boy-putting-on-clothes-clipart-serbian-kids.png");
+          "https://png.pngitem.com/pimgs/s/466-4661960_transpaart-serbian-kids.png");
   String filePath;
 
   List<ImageModel> list = [];
-
+  //done
+//Hamdy .. consider naming
   Io.File isDbContainsUrl(
       List<ImageModel> list, ImageModel newModel, imgNameFormat) {
-    print(list.length);
+    print('${list.length} list.length');
+    //Hamdy .. directory must not be separated in like database manager and mut not be passed between functions
     bool isInLocal = DownloadImage().isInLocal(
         "${newModel.getImageName("png", imgNameFormat)}", folderPath);
     print('$isInLocal is in local');
-    if (list.length == 0 && !isInLocal) {
+    if (list.isEmpty && !isInLocal) {
       print('iam here');
 
+      //Hamdy .. separate this in new functiond
       DownloadImage()
           .downloadImage(
               url: newModel.imgUrl,
               fileName: newModel.getImageName('png', imgNameFormat))
-          .then((value)  {
+          .then((value) {
         print('downloaded');
-
       });
-
+//Hamdy .. unneeded logic, remove it
       if (newModel.isInDB == false) {
         newModel.isInDB = true;
         dbManager.insertImageIntoDB(newModel).then((value) {}).catchError((e) {
           newModel.isInDB = false;
         });
       }
+      //Hamdy .. how it will be returned and you still download it
       return Io.File(
           '$folderPath/${newModel.getImageName('png', imgNameFormat)}');
 
       // setState(() {
       //   newModel.isInDB = true;
       // });
+      //Hamdy .. needs to be reconstructed
     } else {
       for (var item in list) {
         print('${item.appId} appid');
-        if (newModel.imgUrl.compareTo(item.imgUrl) == 0) {
+        if (newModel.imgUrl==item.imgUrl) {
           //TODO check image in local Storage, if it's not exists download it
           bool isInLocal = DownloadImage().isInLocal(
               "${item.getImageName("png", imgNameFormat)}", folderPath);
@@ -129,17 +132,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   url: newModel.imgUrl,
                   fileName: "${item.getImageName("png", imgNameFormat)}")
               .then((value) {
-            print('downloaded');
-
+            print('downloadedddddddd');
           });
           // setState(() {
           //   item.isInDB = false;
           // });
           if (item.isInDB == false) {
             item.isInDB = true;
-            dbManager.insertImageIntoDB(item).then((value) {}).catchError((e) {
+            dbManager.updateImageByType(newModel).then((value) {
+              print(item.imgUrl);
+              print('is in db');
+            }).catchError((e) {
               item.isInDB = false;
-              print('hhhhhhhhhhhhh');
             });
           }
         }
@@ -163,20 +167,46 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<ImageModel> imgAppIdList = [];
+  Completer completer = new Completer<List<ImageModel>>();
 
-  Io.File getImageByAppId(ImageModel imgModel) {
-    dbManager.getImageByAppId(imgModel.appId).then((value) async {
+  Future<Io.File> getImageByAppId(ImageModel imgModel) async {
+    await dbManager.getImageByAppId(imgModel.appId).then((value) {
       for (var i = 0; i < value.length; i++) {
+        //var d=completer.complete(value[i]);
+        //Hamdy .. consider naming ... we write code for any image not for app image
         imgAppIdList.add(ImageModel.fromJson(value[i]));
+        //completer.complete(imgAppIdList);
       }
     });
     return isDbContainsUrl(imgAppIdList, imgModel, ImageNameFormat.TYPE_APPID);
+
+// isDbContainsUrl(imgAppIdList, imgModel, ImageNameFormat.TYPE_APPID);
+
     // if(imgModel.isInDB &&folderPath.isNotEmpty){
     //     //   return Io.File('$folderPath/${imgModel.getImageName('png', ImageNameFormat.TYPE_APPID)}');
     //     // }else{
     //     //   return Io.File('$folderPath/11_22.png');
     //     //
     //     // }
+  }
+
+  Io.File getImageByAppIdd(ImageModel imgModel) {
+    var completed = false;
+    while (!completed) {
+      dbManager.getImageByAppId(imgModel.appId).then((value) {
+        for (var i = 0; i < value.length; i++) {
+          //var d=completer.complete(value[i]);
+          imgAppIdList.add(ImageModel.fromJson(value[i]));
+        }
+        completed = true;
+      }).catchError((e) {
+        completed = false;
+      });
+    }
+
+    return completed == true
+        ? isDbContainsUrl(imgAppIdList, imgModel, ImageNameFormat.TYPE_APPID)
+        : Io.File('$folderPath/15_111.png');
   }
 
   List<ImageModel> imgModelAndAppIdList = [];
@@ -286,12 +316,21 @@ class _MyHomePageState extends State<MyHomePage> {
     folderPath = await getFilePathString();
   }
 
+  Io.File data;
+
+  getdata() async {
+    data = await getImageByAppId(imgModel);
+  }
+
   @override
   void initState() {
     super.initState();
-
+    getdata();
+    //Hamdy ..  write this in separated function
     Future.delayed(const Duration(milliseconds: 0), () async {
       folderPath = await getFilePathString();
+
+      // folderPath = await getFilePathString();
     });
     /*
     Future.delayed(const Duration(milliseconds: 500), () async {
@@ -341,12 +380,11 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-              width: 200,
-              height: 200,
-              child: Image(
-                image: FileImage(getImageByAppId(imgModel)),
-              ),
-            )
+                width: 200,
+                height: 200,
+                child: folderPath.isNotEmpty
+                    ? Image(image: FileImage(data))
+                    : SizedBox.shrink())
             /* Container(
               child: //imgModel.isInDB ?
               Image(
