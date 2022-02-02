@@ -14,6 +14,7 @@ class DownloadImagesManger {
       Dio dio = new Dio();
       _httpClient(dio);
       final filePath = '$globalFilePath/$downloadedImageName';
+      print('$globalFilePath global file path');
       Response response = await _getResponse(dio, url);
       print(response.headers);
       File file = File(filePath);

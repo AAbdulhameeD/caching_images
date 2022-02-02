@@ -1,4 +1,5 @@
 import '../main.dart';
+import '../temp_func.dart';
 
 class ImageModel{
   String imgUrl;

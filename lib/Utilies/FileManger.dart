@@ -18,44 +18,19 @@ class FileManger {
         : cashedImagesFolderPath.create();
     _path = cashedImagesFolderPath.path;
     return _path;
-    /* if ((await cashedImagesFolderPath.exists())) {
-      print('Cashed images folder exists ${cashedImagesFolderPath.path}');
-      _path = '${cashedImagesFolderPath.path}';
-    } else {
-      print('Cashed images folder doesn\'t exist');
-      cashedImagesFolderPath.create().then((value) => print('now the folder exists ${value.path}'));
-      _path = '${cashedImagesFolderPath.path}';
-    }*/
-    // return _path;
   }
 
 //done
   bool isInLocal(String fileName) {
- /*   if (globalFilePath.isNotEmpty) {
-      final imagesDirectory = Directory('$globalFilePath');
-      //Hamdy .. there is no need for list. it will be always one file
-      List<String> imagesTitles = [];
-      String imageName = '';
-      imagesDirectory
-          .listSync(recursive: true, followLinks: false)
-          .forEach((image) {
-        if (fileName == _substringImagePath(image.toString()){
-        return true;
-        }
-        // String imageName = _substringImagePath(image.toString());
-        // imagesTitles.add(imageName);
-        // print(imageName);
-        });
-      return imagesTitles.contains(fileName);
-    } else {
-      throw ('the directory is wrong');
-    }*/
     if (globalFilePath.isNotEmpty) {
       final imagesDirectory = Directory('$globalFilePath');
       //Hamdy .. there is no need for list. it will be always one file
       var imagesDirIterated = imagesDirectory
           .listSync(recursive: true, followLinks: false);
       for (var image in imagesDirIterated) {
+        print('${ _substringImagePath(image.toString())==fileName} substring');
+
+
         if (fileName == _substringImagePath(image.toString())) {
           return true;
         }
@@ -93,6 +68,6 @@ class FileManger {
         _imgName = 'SCREENS_${appId}_${businessTypeId}_$screenType';
         break;
     }
-    return _imgName;
+    return '$_imgName.png';
   }
 }

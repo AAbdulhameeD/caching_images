@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:caching_images/Shared/constants/constants.dart';
 import 'package:caching_images/Utilies/FileManger.dart';
 import 'package:flutter/material.dart';
 
@@ -22,8 +23,9 @@ class ImagesManger {
       url: url,
       downloadedImageName: imageName,
     );
+    print('${FileManger().isInLocal(imageName)} is in local');
     if (FileManger().isInLocal(imageName)) {
-      return FileImage(File(imageName));
+      return FileImage(File('$globalFilePath/$imageName'));
     } else {
       //   DownloadImagesManger().downloadImage(url, ImageName)
       return NetworkImage(url);
