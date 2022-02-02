@@ -5,3 +5,4 @@ const LOGIN_LOGO=4;
 const APPS=5;
 const MODULES=6;
 const SCREENS=7;
+String globalFilePath='';
