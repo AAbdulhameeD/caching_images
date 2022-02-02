@@ -4,10 +4,13 @@ import 'dart:io' as Io;
 ///////////////////////////////////////////////////
 
 import 'package:caching_images/DB/DBManger.dart';
+import 'package:caching_images/Utilies/FileManger.dart';
 import 'package:caching_images/download_image.dart';
 import 'package:caching_images/models/image_model.dart';
 import 'package:flutter/material.dart';
 
+import 'Shared/constants/constants.dart';
+import 'Utilies/ImagesManger.dart';
 import 'download_image.dart';
 
 class MyHttpOverrides extends Io.HttpOverrides {
@@ -70,6 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String filePath;
 
   List<ImageModel> list = [];
+
   //done
 //Hamdy .. consider naming
   Io.File isDbContainsUrl(
@@ -108,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       for (var item in list) {
         print('${item.appId} appid');
-        if (newModel.imgUrl==item.imgUrl) {
+        if (newModel.imgUrl == item.imgUrl) {
           //TODO check image in local Storage, if it's not exists download it
           bool isInLocal = DownloadImage().isInLocal(
               "${item.getImageName("png", imgNameFormat)}", folderPath);
@@ -274,7 +278,6 @@ class _MyHomePageState extends State<MyHomePage> {
       //  await isDbContainsUrl( list, model);
       //   print('${img.isInDB} is in Db ?');
     });
-
   }
 
   @override
@@ -292,14 +295,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    getdata();
+
     //Hamdy ..  write this in separated function
     Future.delayed(const Duration(milliseconds: 0), () async {
-      folderPath = await getFilePathString();
+      globalFilePath = await FileManger().getFilePath();
 
       // folderPath = await getFilePathString();
     });
-
   }
 
 //await dbManager.insertImageIntoDB('http://asd', 1, 3, 5, 10, 8);
@@ -336,12 +338,20 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-                width: 200,
-                height: 200,
-                child: folderPath.isNotEmpty
-                    ? Image(image: FileImage(data))
-                    : SizedBox.shrink())
-
+              width: 200,
+              height: 200,
+              child: Image(
+                image: ImagesManger().loadImage(
+                  url:
+                      "https://png.pngitem.com/pimgs/s/466-4661960_transpaart-serbian-kids.png",
+                  type: APPS,
+                  appId: 11,
+                  moduleId: 12,
+                  screenType: "a",
+                  businessTypeId: 13,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -349,7 +359,6 @@ class _MyHomePageState extends State<MyHomePage> {
           onPressed: () async {
             // getLocalImage(imgModel);
             setState(() {});
-
           },
           tooltip: 'Increment',
           child: Icon(Icons.add)
