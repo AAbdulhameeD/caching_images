@@ -274,40 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //  await isDbContainsUrl( list, model);
       //   print('${img.isInDB} is in Db ?');
     });
-    // list.add(await dbManager.getImageByAppId(2));
-    // var imgModel = ImageModel.fromJson(list[0]);
-    // for(var ele in list){
-    //   print('${}')
-    // }
 
-    // dbManager.deleteAllImages();
-    //  DownloadImage().downloadFile(
-    //      "https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg",
-    //    imageModel: ImageModel(imgType:PROFILE_lOGO,moduleId: 22,businessTypeID: 33,appId: 44,screenType: "as", imgUrl: 'aasa')
-    //  );
-    //      dbManager.deleteAllImages();
-    //    //dbManager.insertImageIntoDB('http://asssd', 11, 13, 51, 0, 81);
-
-    //    var list=await dbManager.getImageByAppId(13);
-    //    var imgModel= ImageModel.fromJson(list[0]);
-    //      String a="aaa";
-    //      String c='aaa';
-    //
-    //      String b=imgModel.imgUrl.toString();
-    //      int eq=a.compareTo(imgModel.imgUrl);
-    //     print('${imgModel.imgUrl==a} imggg eeee');
-
-    //  dynamic img=await dbManager.getImageByBusinessTypeId(81);
-    // print('${img[0]} img');
-    //  dynamic img2=await dbManager.getImageByAppId(13);
-    // var e=   dbManager.getImageByModuleId(5).then((val) {
-    //   print('$val val');
-    // });
-
-    //print('${{await dbManager.getImageByAppId(13)}} img');
-    // print('$e img eeee');
-    // print('${await dbManager.getImageByScreenId(0)} img');
-    // print('${await dbManager.getImageByBusinessTypeId(81)} img');
   }
 
   @override
@@ -332,18 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       // folderPath = await getFilePathString();
     });
-    /*
-    Future.delayed(const Duration(milliseconds: 500), () async {
-      await DownloadImage()
-          .getFilePath('${imgModel.getImageName("png")}')
-          .then((value) => filePath = value);*/
 
-    // file = await SaveFile().saveImage("https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg");
-    // print('${file}file path');
-    //
-    // setState(() {
-    //   print('${file}file path');
-    // });
   }
 
 //await dbManager.insertImageIntoDB('http://asd', 1, 3, 5, 10, 8);
@@ -385,7 +341,87 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: folderPath.isNotEmpty
                     ? Image(image: FileImage(data))
                     : SizedBox.shrink())
-            /* Container(
+
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            // getLocalImage(imgModel);
+            setState(() {});
+
+          },
+          tooltip: 'Increment',
+          child: Icon(Icons.add)
+          // Image.file("/data/user/0/com.example.caching_images/app_flutter/cached_images/fileName.png"),
+          ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+// list.add(await dbManager.getImageByAppId(2));
+// var imgModel = ImageModel.fromJson(list[0]);
+// for(var ele in list){
+//   print('${}')
+// }
+
+// dbManager.deleteAllImages();
+//  DownloadImage().downloadFile(
+//      "https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg",
+//    imageModel: ImageModel(imgType:PROFILE_lOGO,moduleId: 22,businessTypeID: 33,appId: 44,screenType: "as", imgUrl: 'aasa')
+//  );
+//      dbManager.deleteAllImages();
+//    //dbManager.insertImageIntoDB('http://asssd', 11, 13, 51, 0, 81);
+
+//    var list=await dbManager.getImageByAppId(13);
+//    var imgModel= ImageModel.fromJson(list[0]);
+//      String a="aaa";
+//      String c='aaa';
+//
+//      String b=imgModel.imgUrl.toString();
+//      int eq=a.compareTo(imgModel.imgUrl);
+//     print('${imgModel.imgUrl==a} imggg eeee');
+
+//  dynamic img=await dbManager.getImageByBusinessTypeId(81);
+// print('${img[0]} img');
+//  dynamic img2=await dbManager.getImageByAppId(13);
+// var e=   dbManager.getImageByModuleId(5).then((val) {
+//   print('$val val');
+// });
+
+//print('${{await dbManager.getImageByAppId(13)}} img');
+// print('$e img eeee');
+// print('${await dbManager.getImageByScreenId(0)} img');
+// print('${await dbManager.getImageByBusinessTypeId(81)} img');
+// getLocalImage(
+//   "https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg",
+//   ImageModel(
+//     imgUrl:
+//     "https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg",
+//     screenType: "aa",
+//     appId: 2,
+//     businessTypeID: 22,
+//     moduleId: 21,
+//     imgType: 11,
+//   ),
+// );
+// print('${await dbManager.getImageByType(11)} img');
+
+// await DownloadImage().downloadImage(url: "https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg"
+//      , fileName: 'fareedddd');
+
+//print('${await DownloadImage().isInLocal('ahmeddd.png')} is in local');
+// /print("${await DownloadImage().isInLocal("gemini.jpg")} is in local");
+//  if (file == null)
+//    print('nulll');
+
+// String  filePath = await SaveFile().saveImage("https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg").then((value) {
+//   print('$value img path is ready');
+//   return value;
+// });
+//  setState(() {
+//
+//  });
+/* Container(
               child: //imgModel.isInDB ?
               Image(
                 image: FileImage(file),
@@ -398,47 +434,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 .headline4,
           ),
           ),*/
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            // getLocalImage(imgModel);
-            setState(() {});
-            // getLocalImage(
-            //   "https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg",
-            //   ImageModel(
-            //     imgUrl:
-            //     "https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg",
-            //     screenType: "aa",
-            //     appId: 2,
-            //     businessTypeID: 22,
-            //     moduleId: 21,
-            //     imgType: 11,
-            //   ),
-            // );
-            // print('${await dbManager.getImageByType(11)} img');
+/*
+    Future.delayed(const Duration(milliseconds: 500), () async {
+      await DownloadImage()
+          .getFilePath('${imgModel.getImageName("png")}')
+          .then((value) => filePath = value);*/
 
-            // await DownloadImage().downloadImage(url: "https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg"
-            //      , fileName: 'fareedddd');
-
-            //print('${await DownloadImage().isInLocal('ahmeddd.png')} is in local');
-            // /print("${await DownloadImage().isInLocal("gemini.jpg")} is in local");
-            //  if (file == null)
-            //    print('nulll');
-
-            // String  filePath = await SaveFile().saveImage("https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg").then((value) {
-            //   print('$value img path is ready');
-            //   return value;
-            // });
-            //  setState(() {
-            //
-            //  });
-          },
-          tooltip: 'Increment',
-          child: Icon(Icons.add)
-          // Image.file("/data/user/0/com.example.caching_images/app_flutter/cached_images/fileName.png"),
-          ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
-}
+// file = await SaveFile().saveImage("https://media.gemini.media/img/large/2019/7/23/2019_7_23_15_8_47_840.jpg");
+// print('${file}file path');
+//
+// setState(() {
+//   print('${file}file path');
+// });
