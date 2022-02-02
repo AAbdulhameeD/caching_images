@@ -8,36 +8,60 @@ class FileManger {
   String _folderName = 'cached_images';
   String _path = '';
 
-  Future<String> getFilePath() async {
+  Future<String> getCashedImagesFolderPath() async {
     _appDirectory = await getApplicationDocumentsDirectory();
-    final folderPath = Directory('${_appDirectory.path}/$_folderName');
-    if ((await folderPath.exists())) {
-      print(folderPath.path);
-      _path = '${folderPath.path}';
-    } else {
-      folderPath.create().then((value) => print(value.path));
-      _path = '${folderPath.path}';
-    }
+    final cashedImagesFolderPath = Directory(
+        '${_appDirectory.path}/$_folderName');
+
+    await cashedImagesFolderPath.exists()
+        ? _path = cashedImagesFolderPath.path
+        : cashedImagesFolderPath.create();
+    _path = cashedImagesFolderPath.path;
     return _path;
+    /* if ((await cashedImagesFolderPath.exists())) {
+      print('Cashed images folder exists ${cashedImagesFolderPath.path}');
+      _path = '${cashedImagesFolderPath.path}';
+    } else {
+      print('Cashed images folder doesn\'t exist');
+      cashedImagesFolderPath.create().then((value) => print('now the folder exists ${value.path}'));
+      _path = '${cashedImagesFolderPath.path}';
+    }*/
+    // return _path;
   }
 
 //done
   bool isInLocal(String fileName) {
-    if (globalFilePath.isNotEmpty) {
+ /*   if (globalFilePath.isNotEmpty) {
       final imagesDirectory = Directory('$globalFilePath');
       //Hamdy .. there is no need for list. it will be always one file
       List<String> imagesTitles = [];
+      String imageName = '';
       imagesDirectory
           .listSync(recursive: true, followLinks: false)
           .forEach((image) {
-        String imageName = _substringImagePath(image.toString());
-        imagesTitles.add(imageName);
+        if (fileName == _substringImagePath(image.toString()){
+        return true;
+        }
+        // String imageName = _substringImagePath(image.toString());
+        // imagesTitles.add(imageName);
         // print(imageName);
-      });
+        });
       return imagesTitles.contains(fileName);
     } else {
       throw ('the directory is wrong');
+    }*/
+    if (globalFilePath.isNotEmpty) {
+      final imagesDirectory = Directory('$globalFilePath');
+      //Hamdy .. there is no need for list. it will be always one file
+      var imagesDirIterated = imagesDirectory
+          .listSync(recursive: true, followLinks: false);
+      for (var image in imagesDirIterated) {
+        if (fileName == _substringImagePath(image.toString())) {
+          return true;
+        }
+      }
     }
+    return false;
   }
 
   String _substringImagePath(String imagePath) {

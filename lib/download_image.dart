@@ -5,8 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'main.dart';
-
 class DownloadImage {
   Directory appDirectory;
   final folderName = "cached_images";
@@ -96,19 +94,23 @@ class DownloadImage {
     appDirectory = await getApplicationDocumentsDirectory();
     //await File( '${dir.path}/images').create().then((value) => print(value.path));
 
-    final folderPath = Directory('${appDirectory.path}/$folderName');
-    if ((await folderPath.exists())) {
-      print("exist");
-      print(folderPath.path);
-      //folderPath.create().then((value) => print(value.path));
-      path = '${folderPath.path}';
-    } else {
-      print("not exist");
-      folderPath.create().then((value) => print(value.path));
-      path = '${folderPath.path}';
+    try {
+      final folderPath = Directory('${appDirectory.path}/$folderName');
+      if ((await folderPath.exists())) {
+        print("exist");
+        print('existing folder ${folderPath.path}');
+        //folderPath.create().then((value) => print(value.path));
+        path = '${folderPath.path}';
+      } else {
+        print("not exist");
+        folderPath.create().then((value) => print(value.path));
+        path = '${folderPath.path}';
+      }
+      print('my path $path');
+      return path;
+    } catch (error) {
+      print('no such file exists in dirs');
     }
-    print('my path $path');
-    return path;
   }
 //done
   //Hamdy .. make file utils and move it out of download class
@@ -142,5 +144,14 @@ class DownloadImage {
     /* List<FileSystemEntity> entities = await filePath.list().toList();
     entities.forEach(print);
     return entities.contains('1_login.png');*/
+  }
+
+  void deleteDirectory(String dirPath) {
+    Directory dir = Directory(dirPath);
+    if (!dir.existsSync()) {
+      print('cached images not exist');
+      return;
+    }
+    dir.deleteSync(recursive: true);
   }
 }
