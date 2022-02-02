@@ -45,4 +45,30 @@ class FileManger {
         imagePath.toString().lastIndexOf('/') + 1,
         imagePath.toString().length - 1);
   }
+
+  String getImageName(int type, int appId, int moduleId, String screenType,
+      int businessTypeId) {
+    String _imgName = '';
+    switch (type) {
+      case PROFILE_LOGO:
+        _imgName = 'PROFILE_LOGO';
+        break;
+      case LOGIN_BACKGROUND:
+        _imgName = 'LOGIN_BACKGROUND';
+        break;
+      case LOGIN_LOGO:
+        _imgName = 'LOGIN_LOGO';
+        break;
+      case MODULES:
+        _imgName = 'MODULES_${appId}_$moduleId';
+        break;
+      case APPS:
+        _imgName = 'APPS_$appId';
+        break;
+      case SCREENS:
+        _imgName = 'SCREENS_${appId}_${businessTypeId}_$screenType';
+        break;
+    }
+    return _imgName;
+  }
 }

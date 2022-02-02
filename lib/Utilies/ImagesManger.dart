@@ -5,10 +5,19 @@ import 'package:flutter/material.dart';
 
 class ImagesManger {
 
-  ImageProvider loadImage(String url, dynamic type) {
-    if (FileManger().isInLocal('aa')) {
-      return FileImage(File('as'));
+  ImageProvider loadImage(
+      {@required String url,
+      @required int type,
+      @required int appId,
+      @required int moduleId,
+      @required String screenType,
+      @required int businessTypeId}) {
+    final imageName= FileManger().getImageName(type,appId,moduleId,screenType,businessTypeId);
+    if (FileManger().isInLocal(imageName)) {
+   //   DownloadImagesManger().downloadImage(url, ImageName)
+      return FileImage(File(imageName));
     } else {
+      //   DownloadImagesManger().downloadImage(url, ImageName)
       return NetworkImage(url);
     }
   }
