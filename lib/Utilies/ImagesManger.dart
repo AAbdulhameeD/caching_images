@@ -1,12 +1,12 @@
 import 'dart:io';
-
 import 'package:caching_images/Shared/constants/constants.dart';
 import 'package:caching_images/Utilies/FileManger.dart';
 import 'package:flutter/material.dart';
-
 import 'DownloadImagesManger.dart';
 
 class ImagesManger {
+
+  FileManager fileManager;
 
   ImageProvider loadImage(
       {@required String url,
@@ -16,18 +16,19 @@ class ImagesManger {
       @required String screenType,
       @required int businessTypeId}) {
 
-    final imageName = FileManger()
+    fileManager = FileManager();
+
+    final imageName = fileManager
         .getImageName(type, appId, moduleId, screenType, businessTypeId);
 
     DownloadImagesManger().downloadImage(
       url: url,
       downloadedImageName: imageName,
     );
-    print('${FileManger().isInLocal(imageName)} is in local');
-    if (FileManger().isInLocal(imageName)) {
+    print('${fileManager.isInLocal(imageName)} is in local');
+    if (fileManager.isInLocal(imageName)) {
       return FileImage(File('$globalFilePath/$imageName'));
     } else {
-      //   DownloadImagesManger().downloadImage(url, ImageName)
       return NetworkImage(url);
     }
   }

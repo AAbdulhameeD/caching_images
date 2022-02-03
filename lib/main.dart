@@ -13,15 +13,6 @@ import 'Shared/constants/constants.dart';
 import 'Utilies/ImagesManger.dart';
 import 'download_image.dart';
 
-class MyHttpOverrides extends Io.HttpOverrides {
-  @override
-  Io.HttpClient createHttpClient(Io.SecurityContext context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (Io.X509Certificate cert, String host, int port) => true;
-  }
-}
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
@@ -42,22 +33,20 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  var title='';
+  var title = '';
 
   MyHomePage({Key key, this.title}) : super(key: key);
-
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 0), () async {
-      globalFilePath = await FileManger().getCashedImagesFolderPath();
+      globalFilePath = await FileManager().getCashedImagesFolderPath();
     });
   }
 
@@ -77,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Image(
                 image: ImagesManger().loadImage(
                   url:
-                      "https://png.pngitem.com/pimgs/s/466-4661960_transpaart-serbian-kids.png",
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg',
                   type: APPS,
                   appId: 11,
                   moduleId: 12,
@@ -90,12 +79,10 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: ()  {
-          },
+          onPressed: () {},
           tooltip: 'Increment',
-          child: Icon(Icons.add)
-          ), // This trailing comma makes auto-formatting nicer for build methods.
+          child: Icon(Icons
+              .add)), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
-

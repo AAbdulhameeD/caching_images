@@ -5,7 +5,6 @@ import 'package:image/image.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-import 'main.dart';
 class SaveFile {
 
   Future<String> get _localPath async {
@@ -14,7 +13,7 @@ class SaveFile {
     return directory.path;
   }
   Future<Io.File> getImageFromNetwork(String url) async {
-    Io.HttpOverrides.global = MyHttpOverrides();
+   // Io.HttpOverrides.global = MyHttpOverrides();
 
     Io.File file = await DefaultCacheManager().getSingleFile(url).then((value) {
       print('${      value.uri} uri');
@@ -26,7 +25,7 @@ class SaveFile {
   }
 
   Future<String> saveImage(String url) async {
-    Io.HttpOverrides.global = MyHttpOverrides();
+   // Io.HttpOverrides.global = MyHttpOverrides();
 
    try{
      final file = await getImageFromNetwork(url);

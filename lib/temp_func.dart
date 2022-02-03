@@ -298,7 +298,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //Hamdy ..  write this in separated function
     Future.delayed(const Duration(milliseconds: 0), () async {
-      globalFilePath = await FileManger().getCashedImagesFolderPath();
+      globalFilePath = await FileManager().getCashedImagesFolderPath();
 
       // folderPath = await getFilePathString();
     });
