@@ -5,29 +5,27 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 class DownloadImagesManger {
+  Dio _dio = Dio();
+  File _file;
+  Response _response;
+  DownloadImagesManger(){
+    _httpClient(this._dio);
+  }
+
   Future<void> downloadImage({
     @required String url,
     @required String downloadedImageName,
   }) async {
-
     try {
-      Dio dio = new Dio();
-      _httpClient(dio);
-      final filePath = '$globalFilePath/$downloadedImageName';
-      print('$globalFilePath global file path');
-      Response response = await _getResponse(dio, url);
-      print(response.headers);
-      File file = File(filePath);
-      var randomAccessFile = file.openSync(mode: FileMode.write);
-      print(response.data);
-      randomAccessFile.writeFromSync(response.data);
-      await randomAccessFile.close();
-      //      .download(url, filePath ).then((value) {
-      //   print('${value} downloadImage response ');
-      // }).catchError((e){
-      //   print('$e downloadImage error ');
-      //
-      // });
+      if (globalFilePath.isNotEmpty) {
+        final _filePath = '$globalFilePath/$downloadedImageName';
+        _response = await _getResponse(_dio, url);
+         _file = File(_filePath);
+        var randomAccessFile = _file.openSync(mode: FileMode.write);
+        print(_response.data);
+        randomAccessFile.writeFromSync(_response.data);
+        await randomAccessFile.close();
+      }
     } catch (e) {
       print('${e.toString()} error in download');
     }
