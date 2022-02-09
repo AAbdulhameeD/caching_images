@@ -23,12 +23,10 @@ class FileManager {
   bool isInLocal(String fileName) {
     if (globalFilePath.isNotEmpty) {
       final imagesDirectory = Directory('$globalFilePath');
-      print('in is in local $globalFilePath');
-      //Hamdy .. there is no need for list. it will be always one file
-      var imagesDirIterated = imagesDirectory
-          .listSync(recursive: true, followLinks: false);
-      for (var image in imagesDirIterated) {
-        print('${ _substringImagePath(image.toString())==fileName} substring');
+     // print('in is in local $globalFilePath');
+      var images = imagesDirectory.listSync(recursive: true, followLinks: false);
+      for (var image in images) {
+       // print('${ _substringImagePath(image)==fileName} substring');
         if (fileName == _substringImagePath(image.toString())) {
           return true;
         }
@@ -38,34 +36,26 @@ class FileManager {
   }
 
   String _substringImagePath(String imagePath) {
-    return imagePath.toString().substring(
-        imagePath.toString().lastIndexOf('/') + 1,
-        imagePath.toString().length - 1);
+    return imagePath.substring(
+        imagePath.lastIndexOf('/') + 1,
+        imagePath.length - 1);
   }
-
+//ignore:unnecessary_statements
   String getImageName(int type, int appId, int moduleId, String screenType,
       int businessTypeId) {
-    String _imgName = '';
     switch (type) {
       case PROFILE_LOGO:
-        _imgName = 'PROFILE_LOGO';
-        break;
+        return 'PROFILE_LOGO.png';
       case LOGIN_BACKGROUND:
-        _imgName = 'LOGIN_BACKGROUND';
-        break;
+        return 'LOGIN_BACKGROUND.png';
       case LOGIN_LOGO:
-        _imgName = 'LOGIN_LOGO';
-        break;
+        return 'LOGIN_LOGO.png';
       case MODULES:
-        _imgName = 'MODULES_${appId}_$moduleId';
-        break;
+        return 'MODULES_${appId}_$moduleId.png';
       case APPS:
-        _imgName = 'APPS_$appId';
-        break;
+        return 'APPS_$appId.png';
       case SCREENS:
-        _imgName = 'SCREENS_${appId}_${businessTypeId}_$screenType';
-        break;
+        return 'SCREENS_${appId}_${businessTypeId}_$screenType.png';
     }
-    return '$_imgName.png';
   }
 }

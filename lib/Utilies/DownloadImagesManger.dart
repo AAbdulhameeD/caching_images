@@ -16,17 +16,19 @@ class DownloadImagesManger {
     @required String url,
     @required String downloadedImageName,
   }) async {
+    var randomAccessFile;
     try {
       if (globalFilePath.isNotEmpty) {
-        final _filePath = '$globalFilePath/$downloadedImageName';
+        _file = File('$globalFilePath/$downloadedImageName');
         _response = await _getResponse(_dio, url);
-         _file = File(_filePath);
-        var randomAccessFile = _file.openSync(mode: FileMode.write);
+        randomAccessFile = _file.openSync(mode: FileMode.write);
         print(_response.data);
         randomAccessFile.writeFromSync(_response.data);
         await randomAccessFile.close();
       }
     } catch (e) {
+      await randomAccessFile ?? randomAccessFile.close();
+      //Hamdy .. please change print with log function used on S2G
       print('${e.toString()} error in download');
     }
   }

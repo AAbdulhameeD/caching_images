@@ -45,8 +45,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 0), () async {
-      globalFilePath = await FileManager().getCashedImagesFolderPath();
+    //Future.delayed(const Duration(milliseconds: 0), () async {
+       callingFilePath();
+
+  }
+
+  Future callingFilePath() async {
+    globalFilePath = await FileManager().getCashedImagesFolderPath();
+    setState(() {
     });
   }
 
@@ -63,12 +69,12 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               width: 200,
               height: 200,
-              child: Image(
-                image: ImagesManger().loadImage(
+              child: globalFilePath.isEmpty? Center(child: CircularProgressIndicator(),) : Image(
+                image: ImagesManager().loadImage(
                   url:
                       'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg',
                   type: APPS,
-                  appId: 11,
+                  appId: 88,
                   moduleId: 12,
                   screenType: "a",
                   businessTypeId: 13,

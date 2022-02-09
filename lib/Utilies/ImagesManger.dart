@@ -4,32 +4,39 @@ import 'package:caching_images/Utilies/FileManger.dart';
 import 'package:flutter/material.dart';
 import 'DownloadImagesManger.dart';
 
-class ImagesManger {
-
+class ImagesManager {
   FileManager fileManager;
 
+  ImagesManager(){fileManager = FileManager();}
+
+//Hamdy .. remove required option and make nonrequired optional with default value empty or null
+  //done
   ImageProvider loadImage(
       {@required String url,
       @required int type,
-      @required int appId,
-      @required int moduleId,
-      @required String screenType,
-      @required int businessTypeId}) {
+      int appId,
+      int moduleId,
+      String screenType = '',
+      int businessTypeId}) {
 
-    fileManager = FileManager();
+    final imageName = fileManager.getImageName(
+        type, appId, moduleId, screenType, businessTypeId);
 
-    final imageName = fileManager
-        .getImageName(type, appId, moduleId, screenType, businessTypeId);
 
-    DownloadImagesManger().downloadImage(
-      url: url,
-      downloadedImageName: imageName,
-    );
+      DownloadImagesManger().downloadImage(
+        url: url,
+        downloadedImageName: imageName,
+      );
+
+
     print('${fileManager.isInLocal(imageName)} is in local');
-    if (fileManager.isInLocal(imageName)) {
-      return FileImage(File('$globalFilePath/$imageName'));
-    } else {
-      return NetworkImage(url);
+      return fileManager.isInLocal(imageName)
+          ? FileImage(File('$globalFilePath/$imageName'))
+          : NetworkImage(url);
     }
+
+  Future getFilePath () async{
+    globalFilePath = await FileManager().getCashedImagesFolderPath();
+
   }
 }

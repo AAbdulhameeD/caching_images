@@ -341,7 +341,7 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 200,
               height: 200,
               child: Image(
-                image: ImagesManger().loadImage(
+                image: ImagesManager().loadImage(
                   url:
                   "https://png.pngitem.com/pimgs/s/466-4661960_transpaart-serbian-kids.png",
                   type: APPS,
